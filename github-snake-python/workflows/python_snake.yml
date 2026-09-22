@@ -1,0 +1,46 @@
+name: Python Snake Generator
+
+on:
+  schedule:
+    # Berjalan otomatis setiap hari jam 12 malam
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Memungkinkan Anda menjalankan manual kapan saja dari web GitHub
+  push:
+    branches:
+    - main
+
+jobs:
+  run-python-snake:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+    # 1. Ambil kode terbaru dari repositori GitHub Anda
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Siapkan sistem Python di server awan GitHub
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 3. Instal pustaka gambar Pillow di server GitHub
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install Pillow
+
+    # 4. Jalankan skrip Python Anda secara otomatis!
+    - name: Run Python Script
+      run: python generate_snake.py
+
+    # 5. Push atau simpan otomatis hasilnya kembali ke repositori Anda
+    - name: Commit and Push GIF
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@://github.com"
+        git add dist/python-snake.gif
+        git commit -m "Update animasi ular dari Python script" || exit 0
+        git push origin main
